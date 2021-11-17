@@ -1,0 +1,48 @@
+version: "3"
+services:
+  server:
+    build:
+      context: ./
+      target: dev
+    depends_on:
+      - postgres
+    environment:
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: ${POSTGRES_DB}
+      NODE_ENV: development
+      SERVER_PORT: 9000
+    ports:
+      - "9000:9000"
+      - "9229:9229"
+    command: npm run server:dev
+    volumes:
+      - .:/home/app/
+
+  client:
+    build:
+      context: ./
+      target: dev
+    depends_on:
+      - server
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    command: npm run start
+    volumes:
+      - .:/home/app/
+
+  postgres:
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}

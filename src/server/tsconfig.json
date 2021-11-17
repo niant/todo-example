@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "sourceMap": true,
+    "module": "commonjs",
+    "strict": true,
+    "target": "esnext",
+    "moduleResolution": "node"
+  },
+  "exclude": ["../../build", "../client"],
+  "include": [".", "../shared"]
+}

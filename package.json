@@ -1,0 +1,67 @@
+{
+  "name": "todo",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@craco/craco": "^6.2.0",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "@types/jest": "^26.0.24",
+    "@types/react": "^17.0.19",
+    "@types/react-dom": "^17.0.9",
+    "axios": "^0.21.4",
+    "express": "^4.17.1",
+    "fp-ts": "^2.11.1",
+    "io-ts": "^2.2.16",
+    "nanoid": "^3.1.25",
+    "pg": "^8.7.1",
+    "ramda": "^0.27.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "rxjs": "^7.3.0",
+    "typescript": "^4.3.5",
+    "web-vitals": "^1.1.2"
+  },
+  "scripts": {
+    "dev": "concurrently -p name -c \"yellow,magenta\" -n \"server,CRA\" \"npm run server:dev\" \"npm run start\"",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test --runInBand --watchAll",
+    "tdd": "",
+    "eject": "react-scripts eject",
+    "server:dev": "ts-node-dev --project ./src/server/tsconfig.json --respawn src/server/index.ts"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.9.2",
+    "@types/pg": "^8.6.1",
+    "@types/ramda": "^0.27.44",
+    "autoprefixer": "^9.8.6",
+    "concurrently": "^6.2.1",
+    "msw": "^0.35.0",
+    "postcss": "^7.0.36",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.9",
+    "ts-node-dev": "^1.1.8"
+  },
+  "proxy": "http://server:9000"
+}
