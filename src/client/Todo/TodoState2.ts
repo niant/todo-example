@@ -1,3 +1,8 @@
+import { append } from "fp-ts/lib/Array";
+import { flow, pipe } from "fp-ts/lib/function";
+import * as R from "ramda";
+import { map, merge, mergeMap, scan, tap } from "rxjs";
+import { logger } from "../../shared/Logger/Logger";
 import {
   completedIds,
   create_X,
@@ -11,17 +16,37 @@ import {
   Todo,
   updateTodo,
 } from "../../shared/Todo/Todo";
-import { logger } from "../../shared/Logger/Logger";
-import * as R from "ramda";
-import { fromTaskEither, subject } from "../../shared/Util/Stream";
-import { scan, tap, map, mergeMap, merge } from "rxjs";
-import { connectStreamToComponent } from "../../shared/Util/View";
-import { Todos } from "./TodosView2";
 import { run } from "../../shared/Util/functions";
-import { append } from "fp-ts/lib/Array";
-import { flow, pipe } from "fp-ts/lib/function";
+import { fromTaskEither, subject } from "../../shared/Util/Stream";
+import { connectView } from "../../shared/Util/View";
+import { Todos } from "./TodosView2";
 
-const addTodo = () => {
+export const todoState = () => {
+  const fetch$ = pipe(fromTaskEither(getTodos), map(R.always));
+
+  const [addTodo$, add_X] = addTodoState();
+  const [edit$, edit_X] = editState();
+  const [remove$, remove_X] = removeState();
+  const [toggleComplete$, toggleComplete_X] = toggleCompleteState();
+  const [rejectCompleted$, removeCompleted_X] = removeCompletedState();
+
+  const todos$ = pipe(
+    merge(fetch$, addTodo$, edit$, remove$, toggleComplete$, rejectCompleted$),
+    scan(run, [] as Todo[]),
+    tap({ error: logger.error })
+  );
+
+  const todosView$ = map((todos) => ({ todos }))(todos$);
+
+  const TodosContainer = connectView(
+    Todos({ add_X, edit_X, remove_X, toggleComplete_X, removeCompleted_X }),
+    () => todosView$
+  );
+
+  return { TodosContainer };
+};
+
+const addTodoState = () => {
   const [addTodoInput$, add_X] = subject<string>();
 
   const addTodo$ = pipe(
@@ -34,7 +59,7 @@ const addTodo = () => {
   return [addTodo$, add_X] as const;
 };
 
-const remove = () => {
+const removeState = () => {
   const [remove$, remove_X] = subject<Todo>();
 
   const removeTodo$ = pipe(
@@ -46,7 +71,7 @@ const remove = () => {
   return [removeTodo$, remove_X] as const;
 };
 
-const edit = () => {
+const editState = () => {
   const [edit$, edit_X] = subject<Todo>();
 
   const editAction$ = pipe(
@@ -58,7 +83,7 @@ const edit = () => {
   return [editAction$, edit_X] as const;
 };
 
-const toggleComplete = () => {
+const toggleCompleteState = () => {
   const [toggleComplete$, toggleComplete_X] = subject<Todo>();
 
   const toggle$ = pipe(
@@ -72,7 +97,7 @@ const toggleComplete = () => {
   return [toggle$, toggleComplete_X] as const;
 };
 
-const removeCompleted = () => {
+const removeCompletedState = () => {
   const [removeCompleted$, removeCompleted_X] = subject<Todo[]>();
 
   const rejectCompleted$ = pipe(
@@ -83,29 +108,4 @@ const removeCompleted = () => {
   );
 
   return [rejectCompleted$, removeCompleted_X] as const;
-};
-
-export const todoState = () => {
-  const fetch$ = pipe(fromTaskEither(getTodos), map(R.always));
-
-  const [addTodo$, add_X] = addTodo();
-  const [edit$, edit_X] = edit();
-  const [remove$, remove_X] = remove();
-  const [toggleComplete$, toggleComplete_X] = toggleComplete();
-  const [rejectCompleted$, removeCompleted_X] = removeCompleted();
-
-  const todos$ = pipe(
-    merge(fetch$, addTodo$, edit$, remove$, toggleComplete$, rejectCompleted$),
-    scan(run, [] as Todo[]),
-    tap({ error: logger.error })
-  );
-
-  const todosView$ = map((todos) => ({ todos }))(todos$);
-
-  const TodosContainer = connectStreamToComponent(
-    Todos({ add_X, edit_X, remove_X, toggleComplete_X, removeCompleted_X }),
-    todosView$
-  );
-
-  return { TodosContainer };
 };

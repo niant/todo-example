@@ -1,4 +1,3 @@
-import * as R from "ramda";
 import {
   render,
   screen,
@@ -6,12 +5,13 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import { todoState } from "./TodoState2";
+import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
-import userEvent from "@testing-library/user-event";
-import { todosGenerator } from "../../shared/Todo/TodoGenerator";
+import * as R from "ramda";
 import { Todo } from "../../shared/Todo/Todo";
+import { todosGenerator } from "../../shared/Todo/TodoGenerator";
+import { todoState } from "./TodoState2";
 
 const post = rest.post("/api/todos", (req, res, ctx) => {
   return res(ctx.json(req.body));
