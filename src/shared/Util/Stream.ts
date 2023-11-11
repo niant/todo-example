@@ -18,7 +18,7 @@ export const fromTaskEither = <E, A>(taskEither: TaskEither<E, A>) =>
  * useState hook (tuple of value and setter are returned). Initial value
  * is optional.
  *
- * @example const [value$, setValue] = useObservableAdapter<T>(initialValue)
+ * @example const [value$, setValue] = createReactiveAdapter<T>(initialValue)
  * @notice Setters should *ONLY* be used in React views (or cyclic dependency).
  */
 export const createReactiveAdapter = <A>(initialValue?: A) => {

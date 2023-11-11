@@ -17,18 +17,21 @@ import {
   updateTodo,
 } from "../../shared/Todo/Todo";
 import { run } from "../../shared/Util/functions";
-import { fromTaskEither, subject } from "../../shared/Util/Stream";
+import {
+  createReactiveAdapter,
+  fromTaskEither,
+} from "../../shared/Util/Stream";
 import { connectView } from "../../shared/Util/View";
 import { TodosView } from "./TodosView2";
 
 export const todoState = () => {
   const fetch$ = pipe(fromTaskEither(getTodos), map(R.always));
 
-  const [addTodo$, add_X] = addTodoState();
-  const [edit$, edit_X] = editState();
-  const [remove$, remove_X] = removeState();
-  const [toggleComplete$, toggleComplete_X] = toggleCompleteState();
-  const [rejectCompleted$, removeCompleted_X] = removeCompletedState();
+  const [addTodo$, add] = addTodoState();
+  const [edit$, edit] = editState();
+  const [remove$, remove] = removeState();
+  const [toggleComplete$, toggleComplete] = toggleCompleteState();
+  const [rejectCompleted$, removeCompleted] = removeCompletedState();
 
   const todos$ = pipe(
     merge(fetch$, addTodo$, edit$, remove$, toggleComplete$, rejectCompleted$),
@@ -42,7 +45,7 @@ export const todoState = () => {
   );
 
   const Todos = connectView(
-    TodosView({ add_X, edit_X, remove_X, toggleComplete_X, removeCompleted_X }),
+    TodosView({ add, edit, remove, toggleComplete, removeCompleted }),
     () => todosView$
   );
 
@@ -50,7 +53,7 @@ export const todoState = () => {
 };
 
 const addTodoState = () => {
-  const [addTodoInput$, add_X] = subject<string>();
+  const [addTodoInput$, add_X] = createReactiveAdapter<string>();
 
   const addTodo$ = pipe(
     addTodoInput$,
@@ -63,7 +66,7 @@ const addTodoState = () => {
 };
 
 const removeState = () => {
-  const [remove$, remove_X] = subject<Todo>();
+  const [remove$, remove_X] = createReactiveAdapter<Todo>();
 
   const removeTodo$ = pipe(
     remove$,
@@ -75,7 +78,7 @@ const removeState = () => {
 };
 
 const editState = () => {
-  const [edit$, edit_X] = subject<Todo>();
+  const [edit$, edit_X] = createReactiveAdapter<Todo>();
 
   const editAction$ = pipe(
     edit$,
@@ -87,7 +90,7 @@ const editState = () => {
 };
 
 const toggleCompleteState = () => {
-  const [toggleComplete$, toggleComplete_X] = subject<Todo>();
+  const [toggleComplete$, toggleComplete_X] = createReactiveAdapter<Todo>();
 
   const toggle$ = pipe(
     toggleComplete$,
@@ -101,7 +104,7 @@ const toggleCompleteState = () => {
 };
 
 const removeCompletedState = () => {
-  const [removeCompleted$, removeCompleted_X] = subject<Todo[]>();
+  const [removeCompleted$, removeCompleted_X] = createReactiveAdapter<Todo[]>();
 
   const rejectCompleted$ = pipe(
     removeCompleted$,
