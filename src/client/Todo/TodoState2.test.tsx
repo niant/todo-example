@@ -30,8 +30,8 @@ const put = (todo: Todo) =>
 test("fetch and render todos from the server", async () => {
   const server = setupServer(get(todosGenerator(1, [{ text: "Foobar" }])));
   server.listen();
-  const { TodosContainer } = todoState();
-  render(<TodosContainer />);
+  const { Todos } = todoState();
+  render(<Todos />);
 
   const todoItems = await screen.findAllByRole("listitem");
   expect(todoItems).toHaveLength(1);
@@ -52,8 +52,8 @@ test("add a todo", async () => {
     post
   );
   server.listen();
-  const { TodosContainer } = todoState();
-  render(<TodosContainer />);
+  const { Todos } = todoState();
+  render(<Todos />);
 
   const todoInput = await screen.findByRole("textbox");
   userEvent.type(todoInput, "Testing{enter}");
@@ -83,8 +83,8 @@ test("remove a todo", async () => {
     })
   );
   server.listen();
-  const { TodosContainer } = todoState();
-  render(<TodosContainer />);
+  const { Todos } = todoState();
+  render(<Todos />);
 
   const todoItem = await screen.findByRole("listitem");
   const deleteButton = within(todoItem).getByLabelText(
@@ -102,8 +102,8 @@ test("complete a todo item", async () => {
   const todos = todosGenerator(1, [{ text: "Foobar" }]);
   const server = setupServer(get(todos), put(todos[0]));
   server.listen();
-  const { TodosContainer } = todoState();
-  render(<TodosContainer />);
+  const { Todos } = todoState();
+  render(<Todos />);
 
   const todoItem = await screen.findByRole("listitem");
   const checkbox = within(todoItem).getByRole("checkbox") as HTMLInputElement;
@@ -121,8 +121,8 @@ test("edit a todo", async () => {
   const server = setupServer(get(todos), put(todos[0]));
   server.listen();
 
-  const { TodosContainer } = todoState();
-  render(<TodosContainer />);
+  const { Todos } = todoState();
+  render(<Todos />);
 
   const todoItem = await screen.findByRole("listitem");
   const editItem = within(todoItem).getByLabelText("Edit");
@@ -156,8 +156,8 @@ test("remove completed", async () => {
   );
 
   server.listen();
-  const { TodosContainer } = todoState();
-  render(<TodosContainer />);
+  const { Todos } = todoState();
+  render(<Todos />);
 
   const todoItems = await screen.findAllByRole("listitem");
   expect(todoItems).toHaveLength(3);

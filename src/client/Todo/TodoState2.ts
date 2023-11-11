@@ -19,7 +19,7 @@ import {
 import { run } from "../../shared/Util/functions";
 import { fromTaskEither, subject } from "../../shared/Util/Stream";
 import { connectView } from "../../shared/Util/View";
-import { Todos } from "./TodosView2";
+import { TodosView } from "./TodosView2";
 
 export const todoState = () => {
   const fetch$ = pipe(fromTaskEither(getTodos), map(R.always));
@@ -36,14 +36,17 @@ export const todoState = () => {
     tap({ error: logger.error })
   );
 
-  const todosView$ = map((todos) => ({ todos }))(todos$);
+  const todosView$ = pipe(
+    todos$,
+    map((todos) => ({ todos }))
+  );
 
-  const TodosContainer = connectView(
-    Todos({ add_X, edit_X, remove_X, toggleComplete_X, removeCompleted_X }),
+  const Todos = connectView(
+    TodosView({ add_X, edit_X, remove_X, toggleComplete_X, removeCompleted_X }),
     () => todosView$
   );
 
-  return { TodosContainer };
+  return { Todos };
 };
 
 const addTodoState = () => {

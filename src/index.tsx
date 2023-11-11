@@ -1,14 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { appState } from "./client/AppState";
 import "./client/index.css";
 import reportWebVitals from "./client/reportWebVitals";
-import { appState } from "./client/AppState";
 
-const { TodosContainer } = appState();
+const { Todos } = appState();
 
 ReactDOM.render(
   <React.StrictMode>
-    <TodosContainer />
+    <Todos />
   </React.StrictMode>,
   document.getElementById("root")
 );

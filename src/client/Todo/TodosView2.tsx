@@ -33,7 +33,7 @@ type TodosActions = {
   removeCompleted_X: (todos: Todo[]) => void;
 };
 
-export const Todos =
+export const TodosView =
   ({
     add_X,
     edit_X,
