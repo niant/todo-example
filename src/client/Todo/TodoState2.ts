@@ -1,7 +1,7 @@
 import { append } from "fp-ts/lib/Array";
 import { flow, pipe } from "fp-ts/lib/function";
 import * as R from "ramda";
-import { map, merge, mergeMap, scan, tap } from "rxjs";
+import { catchError, map, merge, mergeMap, scan } from "rxjs";
 import { logger } from "../../shared/Logger/Logger";
 import {
   completedIds,
@@ -36,7 +36,10 @@ export const todoState = () => {
   const todos$ = pipe(
     merge(fetch$, addTodo$, edit$, remove$, toggleComplete$, rejectCompleted$),
     scan(run, [] as Todo[]),
-    tap({ error: logger.error })
+    catchError((error, caught) => {
+      logger.error(error);
+      return caught;
+    })
   );
 
   const todosView$ = pipe(
