@@ -1,5 +1,9 @@
 import express from "express";
+import { either, taskEither } from "fp-ts";
 import { pipe } from "fp-ts/function";
+import { logger } from "../../shared/Logger/Logger";
+import { todoCodec, todoPartialCodec } from "../../shared/Todo/Todo";
+import { allStrings } from "../../shared/Util/functions";
 import { dbInstance } from "../Util/Db";
 import {
   deleteTodo,
@@ -8,9 +12,6 @@ import {
   insertTodo,
   updateTodo,
 } from "./TodoDb";
-import { either, taskEither } from "fp-ts";
-import { todoCodec, todoPartialCodec } from "../../shared/Todo/Todo";
-import { logger } from "../../shared/Logger/Logger";
 
 const router = express.Router();
 
@@ -53,12 +54,20 @@ router.delete("/todos/:id", async (req, res) => {
 });
 
 router.delete("/todos", async (req, res) => {
-  const ids = req.query.id as string[];
+  const queryId = req.query.id;
+
+  const ids =
+    Array.isArray(queryId) && allStrings(queryId)
+      ? queryId
+      : typeof queryId === "string"
+      ? [queryId]
+      : [];
+
   const task = pipe(
     ids,
     taskEither.fromPredicate(
-      (ids) => Array.isArray(ids) && ids.length > 0,
-      () => new Error("Not valid ids")
+      (ids) => Array.isArray(ids) && ids.length > 0 && allStrings(ids),
+      () => new Error("Not valid ids: " + JSON.stringify(ids))
     ),
     taskEither.chainW(deleteTodos(db))
   );
