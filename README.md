@@ -24,7 +24,8 @@ No build support built yet.
 - Add build opertions for the server
 - Add offline-sync with client-side storage
 - Make view component return stream rather than view directly (subcomponent usage)
-- Replace R with fp-ts?
+- Replace io-ts with Zod
+- Replace CRA with Vite
 
 ## Getting Started with Create React App
 
